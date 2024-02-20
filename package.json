@@ -1,0 +1,19 @@
+{
+  "name": "log",
+  "version": "0.0.1",
+  "description": "",
+  "main": "log.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rweigel/log.git"
+  },
+  "author": "",
+  "license": "",
+  "bugs": {
+    "url": "https://github.com/rweigel/log/issues"
+  },
+  "homepage": "https://github.com/rweigel/log",
+  "dependencies": {
+    "chalk": "^5.3.0"
+  }
+}
