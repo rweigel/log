@@ -4,7 +4,8 @@ const clc  = require('chalk');
 
 let log = {
   logLevel: 'info',
-  logDir: require('os').tmpdir()
+  logDir: require('os').tmpdir(),
+  basePath: path.dirname(require.main.filename)
 };
 
 module.exports = log;
@@ -37,7 +38,7 @@ log.error = function(msg, exit, filePrefix, logDir) {
     }
   }
 
-  let fileName = filePrefix + "-" + log.ds(true) + ".log";
+  let fileName = filePrefix + "-" + ds(true) + ".log";
   let logFile = path.join(logDir, fileName);
   let post = exit ? "Exiting with status 1.": "";
   let consoleMsg = "";
@@ -46,11 +47,11 @@ log.error = function(msg, exit, filePrefix, logDir) {
     if (post) {
       msg = msg + "\n" + post;
     }
-    fileMsg = log.ds() + "\n" + msg;
+    fileMsg = ds() + "\n" + msg;
     consoleMsg = clc.red(` Error. Writing message to ${logFile}:\n---\n${msg}\n---`);
   } else {
     msg = msg + ". " + post;
-    fileMsg = log.ds() + " " + msg;
+    fileMsg = ds() + " " + msg;
     consoleMsg = clc.red(` Error: ${msg.trim()}`);
   }
 
@@ -97,7 +98,8 @@ log.write = function(msg, filePrefix, logDir) {
     log.error(err, false);
   }
 
-  let fileName = path.join(logDir, filePrefix + "-" + log.ds(true) + ".log");
+  let fileName = path.join(logDir, filePrefix + "-" + ds(true) + ".log");
+  msg = msg.replace(/\n/g, "\n" + ds() + " ");
   fs.appendFile(fileName, msg + "\n",
     (err) => {
       if (err) log.error(err.message)
@@ -120,7 +122,7 @@ log.request = function(req, filePrefix, logDir) {
   }
 
   let addr = req.headers['x-forwarded-for'] || req.connection.remoteAddress
-  let fileName = path.join(logDir, filePrefix + "-" + log.ds(true) + ".log");
+  let fileName = path.join(logDir, filePrefix + "-" + ds(true) + ".log");
   let timeStamp = apacheTimeStamp();
   let msg = addr
           + ' - - [' + timeStamp + '] "GET ' + req.originalUrl + '"'
@@ -174,11 +176,7 @@ function prefix() {
   return (new Date()).toISOString();
 }
 
-log.trimPath = function(str) {
-  return path.normalize(str).replace(path.normalize(__dirname+"/..") + "/", "");
-}
-
-log.ds = function(dateOnly) {
+ds = function(dateOnly) {
   // Date string for logging.
   if (dateOnly) {
     return (new Date()).toISOString().split("T")[0];
