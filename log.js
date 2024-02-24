@@ -16,7 +16,7 @@ log.warn = function(msg) {
 
 log.debug = function(msg) {
   if (log.logLevel !== 'debug') return;
-  console.log(prefix() + "[debug] " + msg);
+  console.log(prefix() + "[debug] " + msg.replace(log.basePath, ""));
 }
 
 log.info = function(msg) {
@@ -47,11 +47,11 @@ log.error = function(msg, exit, filePrefix, logDir) {
     if (post) {
       msg = msg + "\n" + post;
     }
-    fileMsg = ds() + "\n" + msg;
+    fileMsg = prefix() + "\n" + msg;
     consoleMsg = clc.red(` Error. Writing message to ${logFile}:\n---\n${msg}\n---`);
   } else {
     msg = msg + ". " + post;
-    fileMsg = ds() + " " + msg;
+    fileMsg = prefix() + " " + msg;
     consoleMsg = clc.red(` Error: ${msg.trim()}`);
   }
 
@@ -171,7 +171,7 @@ function prefix() {
     const functionName = err.stack[idx].getFunctionName();
     const fileName = err.stack[idx].getFileName();
     const lineNumber = err.stack[idx].getLineNumber();
-    return (new Date()).toISOString() + " [" + fileName + "#L" + lineNumber + "] ";
+    return (new Date()).toISOString() + " [" + fileName.replace(log.basePath + "/","") + "#L" + lineNumber + "] ";
   }
   return (new Date()).toISOString();
 }
