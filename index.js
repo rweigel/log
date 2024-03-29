@@ -53,7 +53,7 @@ log.error = function(msg, exit, filePrefix, logDir) {
     fileMsg = prefix() + "\n" + msg;
     consoleMsg = clc.red(` Error. Writing message to ${logFile}:\n---\n${msg}\n---`);
   } else {
-    msg = msg + ". " + post;
+    msg = msg + post;
     fileMsg = prefix() + " " + msg;
     consoleMsg = clc.red(` Error: ${msg.trim()}`);
   }
@@ -135,6 +135,36 @@ log.request = function(req, filePrefix, logDir) {
     (err) => {
       if (err) log.error(err.message)
   });
+}
+
+log.memory = function(filePrefix, logDir) {
+
+  if (!filePrefix) filePrefix = "memory";
+  logDir = logDir || log.logDir;
+
+  try {
+    makeLogDir(logDir);
+  } catch (err) {
+    log.error(err, false);
+  }
+
+  let ymd = ds(true);
+  let fileName = path.join(logDir, filePrefix + "-" + ymd + ".log");
+
+  let usage = process.memoryUsage();
+  let logStr = ymd;
+  for (const [key, value] of Object.entries(usage)) {
+    logStr = logStr + "," + parseInt(value/1000000);
+  }
+  let header = "time," + Object.keys(usage).join(",");
+  if (!fs.existsSync(fileName)) {
+    logStr = header +  + "\n" + logStr;
+    fs.writeFile(fileName, logStr + "\n", (err) => {if (err) throw err});
+  } else {
+    fs.appendFile(fileName, logStr + "\n", (err) => {if (err) throw err});
+  }
+  log.debug(header);
+  log.debug(logStr);
 }
 
 function makeLogDir(logDir) {
