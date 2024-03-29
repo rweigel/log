@@ -17,6 +17,9 @@ log.warn = function(msg, relativePaths) {
 
 log.debug = function(msg, relativePaths) {
   if (log.logLevel !== 'debug') return;
+  if (typeof msg !== "string") {
+    msg = "\n" + JSON.stringify(msg, null, 2);
+  }
   if (relativePaths) msg = msg.replace(log.basePath, "");
   console.log(prefix() + "[debug] " + msg);
 }
