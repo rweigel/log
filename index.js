@@ -25,6 +25,7 @@ log.debug = function(msg, relativePaths) {
 }
 
 log.info = function(msg, relativePaths) {
+  if (log.logLevel === 'none') return;
   if (relativePaths) msg = msg.replace(log.basePath, "");
   console.log(prefix() + "[info] " + msg);
 }
